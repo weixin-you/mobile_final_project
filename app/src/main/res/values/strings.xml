@@ -5,4 +5,8 @@
     <string name="OwlbotDic">OwlbotDic</string>
     <string name="CocktailDB">CocktailDB</string>
     <string name="FoodNutrition">FoodNutrition</string>
+    <string name="cocktail">Cocktail Database</string>
+    <string name="food">Food Nutrition Database</string>
+    <string name="owlbot">Owlbot Dictionary</string>
+    <string name="homepage">Home</string>
 </resources>

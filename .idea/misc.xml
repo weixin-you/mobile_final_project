@@ -5,6 +5,8 @@
       <map>
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.21822916666666667" />
         <entry key="app/src/main/res/layout/activity_pexels.xml" value="0.21822916666666667" />
+        <entry key="app/src/main/res/menu/drawer.xml" value="0.21822916666666667" />
+        <entry key="app/src/main/res/menu/toolbar.xml" value="0.21822916666666667" />
       </map>
     </option>
   </component>
