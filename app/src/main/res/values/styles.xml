@@ -1,0 +1,5 @@
+<resources>
+    <style name="TextAppearance.AppCompat.Widget.ActionBar.Title" parent="@android:style/TextAppearance">
+        <item name="android:textSize">50sp</item>
+    </style>
+</resources>

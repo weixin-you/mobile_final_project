@@ -1,4 +1,27 @@
 <resources>
     <string name="app_name">Mobile 最终项目</string>
     <string name="title">Mobile 开发最终项目</string>
+    <string name="Pexels">Pexels</string>
+    <string name="OwlbotDic">OwlbotDic</string>
+    <string name="CocktailDB">CocktailDB</string>
+    <string name="FoodNutrition">FoodNutrition</string>
+    <string name="cocktail">鸡尾酒数据库</string>
+    <string name="food">食物营养数据库</string>
+    <string name="owlbot">Owlbot 字典</string>
+    <string name="homepage">主页</string>
+    <string name="open">开</string>
+    <string name="close">关</string>
+    <string name="help">帮助</string>
+    <string name="HelpTile">Pexels 帮助</string>
+    <string name="pexelsInstructions1">* Do something</string>
+    <string name="pexelsInstructions2">* Do something</string>
+    <string name="pexelsInstructions3">* Do something</string>
+    <string name="pexelsInstructions4">* Do something</string>
+    <string name="pexelsInstructions5">* Do something</string>
+    <string name="closeHelpDialog">关闭</string>
+
+    <string name="acivity_info">Activity 信息</string>
+    <string name="activity_pexels_name">标题: Pexels</string>
+    <string name="activity_pexels_author">作者: Weixin You</string>
+    <string name="activity_pexels_version">版本号: 1.0</string>
 </resources>

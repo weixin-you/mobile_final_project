@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Mobile Final Project</string>
+    <string name="app_name">Final Project</string>
     <string name="title">Mobile Development Final Project</string>
     <string name="Pexels">Pexels</string>
     <string name="OwlbotDic">OwlbotDic</string>
@@ -9,4 +9,18 @@
     <string name="food">Food Nutrition Database</string>
     <string name="owlbot">Owlbot Dictionary</string>
     <string name="homepage">Home</string>
+    <string name="open">Drawer open</string>
+    <string name="close">Drawer close</string>
+    <string name="help">Help</string>
+    <string name="HelpTile">Pexels Help</string>
+    <string name="pexelsInstructions1">* Do something</string>
+    <string name="pexelsInstructions2">* Do something</string>
+    <string name="pexelsInstructions3">* Do something</string>
+    <string name="pexelsInstructions4">* Do something</string>
+    <string name="pexelsInstructions5">* Do something</string>
+    <string name="closeHelpDialog">Close</string>
+    <string name="acivity_info">Activity Info</string>
+    <string name="activity_pexels_name">Title: Pexels</string>
+    <string name="activity_pexels_author">Author: Weixin You</string>
+    <string name="activity_pexels_version">Version Number: 1.0</string>
 </resources>
