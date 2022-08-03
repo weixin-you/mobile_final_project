@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.cst2335.mobilefinalproject">
-    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -15,22 +16,25 @@
         android:theme="@style/Theme.MobileFinalProject"
         tools:targetApi="31">
         <activity
+            android:name=".DisplayData"
+            android:exported="true"
+            android:label="@string/displaydata" />
+        <activity
             android:name=".FoodNutritionDatabase"
             android:exported="true"
-            android:label="@string/food"/>
+            android:label="@string/food" />
         <activity
             android:name=".CocktailDatabase"
             android:exported="true"
-            android:label="@string/cocktail"/>
+            android:label="@string/cocktail" />
         <activity
             android:name=".OwlbotDictionary"
             android:exported="true"
-            android:label="@string/owlbot"/>
+            android:label="@string/owlbot" />
         <activity
             android:name=".Pexels"
             android:exported="true"
-            android:label="@string/Pexels"
-            />
+            android:label="@string/Pexels" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

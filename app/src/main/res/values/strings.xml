@@ -23,4 +23,5 @@
     <string name="activity_pexels_name">Title: Pexels</string>
     <string name="activity_pexels_author">Author: Weixin You</string>
     <string name="activity_pexels_version">Version Number: 1.0</string>
+    <string name="displaydata">Pexels Display Data</string>
 </resources>

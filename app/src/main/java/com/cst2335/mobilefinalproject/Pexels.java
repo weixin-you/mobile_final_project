@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.net.Uri;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,7 +24,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -40,14 +41,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Set;
 
 public class Pexels extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     private EditText searchField;
     private Button searchButton;
     private String inputValue;
-    private RecyclerView recyclerView;
-    private RecyclerAdapter recyclerAdapter;
-    private String[] dataList= {"one", "Two", "Three"};
+    private String[] photoData2={"one", "two", "three"};
+    private String[] authorNames;
+    public static JSONArray retrievedData;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -65,24 +68,39 @@ public class Pexels extends AppCompatActivity implements NavigationView.OnNaviga
 
         searchField = findViewById(R.id.search_field);
         searchButton = findViewById(R.id.search_button);
-        recyclerView = findViewById(R.id.recyclerView);
-        recyclerAdapter = new RecyclerAdapter(dataList);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(recyclerAdapter);
+
+
         MyHTTPRequest req = new MyHTTPRequest();
 
         searchButton.setOnClickListener(click -> {
             inputValue = searchField.getText().toString();
             req.execute("https://api.pexels.com/v1/search?query="+inputValue);
+            SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref",MODE_PRIVATE);
+            SharedPreferences.Editor myEdit = sharedPreferences.edit();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < photoData2.length; i++) {
+                sb.append(photoData2[i]).append(",");
+            }
+
+            Log.i("85", "in call back");
+            myEdit.putString("data", sb.toString());
+            myEdit.apply();
+
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            Intent goToDisplayData = new Intent(Pexels.this, DisplayData.class);
+            startActivity(goToDisplayData);
         });
 
 
     }
 
-    private class MyHTTPRequest extends AsyncTask< String, Integer, String>
-    {
+    private class MyHTTPRequest extends AsyncTask< String, Integer, String> {
+        private Bitmap image;
+        private String authorName;
         public String doInBackground(String ... args)
         {
             try {
@@ -109,17 +127,19 @@ public class Pexels extends AppCompatActivity implements NavigationView.OnNaviga
                 //convert String to JSON
                 JSONObject jsonResult = new JSONObject(result);
                 JSONArray photosArray = jsonResult.getJSONArray("photos");
-                for (int i = 0; i < photosArray.length(); i++) {
-                    JSONObject objFromArray=photosArray.getJSONObject(i);
-                    String pictureUrl = objFromArray.getString("url");
-                    int width = objFromArray.getInt("width");
-                    int height = objFromArray.getInt("height");
-                    int j=0; j++;
-                }
-                Log.i("photos", photosArray.toString());
+                retrievedData = photosArray;
+                Log.i("121", photosArray.toString());
+//                for (int i = 0; i < photosArray.length(); i++) {
+//                    Log.i("start", "start");
+//                    JSONObject objFromArray=photosArray.getJSONObject(i);
+//                    String pictureUrl = objFromArray.getString("url");
+//                    String authorName = objFromArray.getString("name");
+//                    retrievedData[i]=authorName;
+//                    int width = objFromArray.getInt("width");
+//                    int height = objFromArray.getInt("height");
+//                }
+                Log.i("end", "end");
 
-                //get the double associated with 'value'
-//                double uvRating = jsonResult.getDouble("value");
 
             }
             catch (Exception e)
@@ -138,6 +158,7 @@ public class Pexels extends AppCompatActivity implements NavigationView.OnNaviga
         public void onPostExecute(String fromDoInBackground)
         {
             Log.i("HTTP", fromDoInBackground);
+
         }
     }
     @Override
@@ -223,47 +244,6 @@ public class Pexels extends AppCompatActivity implements NavigationView.OnNaviga
         drawerLayout.closeDrawer(GravityCompat.START);
 
         return false;
-    }
-
-    public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder> {
-
-        private String[] dataList;
-
-        public RecyclerAdapter(String[] dataList){
-            this.dataList=dataList;
-        }
-
-        public class MyViewHolder extends RecyclerView.ViewHolder{
-            private ImageView image;
-            private TextView photographer_name;
-            private TextView name;
-
-            public MyViewHolder(View itemView) {
-                super(itemView);
-//                image=findViewById(R.id.photo);
-//                photographer_name=findViewById(R.id.photographer_name);
-                name = findViewById(R.id.a_name);
-            }
-        }
-        @NonNull
-        @Override
-        public RecyclerAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-//            View imageView = LayoutInflater.from(parent.getContext()).inflate(R.layout.items_list, parent, false);
-//            return new MyViewHolder(imageView);
-
-            View textView = LayoutInflater.from(parent.getContext()).inflate(R.layout.items_list, parent, false);
-            return new MyViewHolder(textView);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-
-        }
-
-        @Override
-        public int getItemCount() {
-            return 0;
-        }
     }
 
 
