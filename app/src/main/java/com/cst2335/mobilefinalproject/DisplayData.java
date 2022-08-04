@@ -10,25 +10,32 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DisplayData extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerAdapter recyclerAdapter;
     private JSONArray data = Pexels.retrievedData;
-    private Bitmap[] photos = new Bitmap[15];
-    private String[] authorNames = new String[15];
+    public static List<PhotoInfo> photoInfoList = new ArrayList<>();
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,38 +43,36 @@ public class DisplayData extends AppCompatActivity {
         setContentView(R.layout.activity_display_data);
 
         recyclerView=findViewById(R.id.recyclerView);
-
         for (int i = 0; i < data.length(); i++) {
+            PhotoInfo photoInfo = new PhotoInfo();
             JSONObject objFromArray = null;
             try {
                 objFromArray = data.getJSONObject(i);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            try {
-                String pictureUrl = objFromArray.getString("url");
-                URL url = new URL(pictureUrl);
-                photos[i] = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                photoInfo.setWidth(objFromArray.getInt("width"));
+                photoInfo.setHeight(objFromArray.getInt("height"));
+//                photoInfo.setUrl(objFromArray.getString("url"));
+                InputStream inputStream = new java.net.URL(objFromArray.getString("url")).openStream();
+                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                photoInfo.setImage(bitmap);
+                photoInfo.setPhotographerName(objFromArray.getString("photographer"));
+                photoInfoList.add(photoInfo);
+
             } catch (JSONException | MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            try {
-                String authorName = objFromArray.getString("photographer");
-                authorNames[i] = authorName;
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
         }
+        Log.i("obj", String.valueOf(photoInfoList.size()));
+
 
 //        SharedPreferences sh = getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
 //        String[] data = sh.getString("data",  "").split(",");
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerAdapter = new RecyclerAdapter(authorNames);
+//        recyclerAdapter = new RecyclerAdapter(authorNames);
+        recyclerAdapter = new RecyclerAdapter(getApplicationContext(), photoInfoList);
         recyclerView.setAdapter(recyclerAdapter);
 
 
@@ -76,7 +81,11 @@ public class DisplayData extends AppCompatActivity {
     public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
 
         // private Bitmap[] localDataSet;
-        private String[] localDataSet;
+        private List<PhotoInfo> dataSet;
+        private Context mContext;
+
+        public RecyclerAdapter(List<PhotoInfo> photoInfoList) {
+        }
 
 
         /**
@@ -85,12 +94,13 @@ public class DisplayData extends AppCompatActivity {
          */
         public class ViewHolder extends RecyclerView.ViewHolder {
             private final TextView textView;
-
+            private final ImageView imageView;
             public ViewHolder(View view) {
                 super(view);
                 // Define click listener for the ViewHolder's View
-
+                imageView = (ImageView) view.findViewById(R.id.photo);
                 textView = (TextView) view.findViewById(R.id.author_name);
+
             }
 
             public TextView getTextView() {
@@ -104,8 +114,9 @@ public class DisplayData extends AppCompatActivity {
          * @param dataSet String[] containing the data to populate views to be used
          * by RecyclerView.
          */
-        public RecyclerAdapter(String[] dataSet) {
-            localDataSet = dataSet;
+        public RecyclerAdapter(Context mContext, List<PhotoInfo> dataSet) {
+            this.dataSet = dataSet;
+            this.mContext=mContext;
         }
 
         // Create new views (invoked by the layout manager)
@@ -124,14 +135,17 @@ public class DisplayData extends AppCompatActivity {
 
             // Get element from your dataset at this position and replace the
             // contents of the view with that element
-            viewHolder.getTextView().setText(localDataSet[position]);
+
+            viewHolder.getTextView().setText(dataSet.get(position).getPhotographerName());
+//            Glide.with(mContext).load(dataSet.get(position).getUrl()]).into(viewHolder.imageView);
+            viewHolder.imageView.setImageBitmap(dataSet.get(position).getImage());
 
         }
 
         // Return the size of your dataset (invoked by the layout manager)
         @Override
         public int getItemCount() {
-            return localDataSet.length;
+            return dataSet.size();
         }
     }
 }
