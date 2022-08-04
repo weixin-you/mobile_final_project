@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,16 +51,11 @@ public class DisplayData extends AppCompatActivity {
                 objFromArray = data.getJSONObject(i);
                 photoInfo.setWidth(objFromArray.getInt("width"));
                 photoInfo.setHeight(objFromArray.getInt("height"));
-//                photoInfo.setUrl(objFromArray.getString("url"));
-                InputStream inputStream = new java.net.URL(objFromArray.getString("url")).openStream();
-                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                photoInfo.setImage(bitmap);
+                photoInfo.setUrl(objFromArray.getJSONObject("src").getString("original"));
                 photoInfo.setPhotographerName(objFromArray.getString("photographer"));
                 photoInfoList.add(photoInfo);
 
-            } catch (JSONException | MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+            } catch (JSONException  e) {
                 e.printStackTrace();
             }
         }
@@ -137,8 +133,16 @@ public class DisplayData extends AppCompatActivity {
             // contents of the view with that element
 
             viewHolder.getTextView().setText(dataSet.get(position).getPhotographerName());
-//            Glide.with(mContext).load(dataSet.get(position).getUrl()]).into(viewHolder.imageView);
-            viewHolder.imageView.setImageBitmap(dataSet.get(position).getImage());
+            Picasso.get()
+                    .load(dataSet.get(position).getUrl())
+                    .resize(50, 50)
+                    .centerCrop()
+                    .into(viewHolder.imageView);
+
+            Log.i("test", String.valueOf(R.id.photo));
+
+
+
 
         }
 

@@ -7,7 +7,7 @@ public class PhotoInfo {
     private int height;
     private int width;
 
-    //    private String url;
+    private String url;
     private Bitmap image;
     private String photographerName;
 
@@ -43,11 +43,11 @@ public class PhotoInfo {
         this.width = width;
     }
 
-//    public String getUrl() {
-//        return url;
-//    }
-//
-//    public void setUrl(String url) {
-//        this.url = url;
-//    }
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }

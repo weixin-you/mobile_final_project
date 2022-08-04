@@ -18,6 +18,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -73,6 +74,13 @@ public class Pexels extends AppCompatActivity implements NavigationView.OnNaviga
         searchButton = findViewById(R.id.search_button);
 
 
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy gfgPolicy =
+                    new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(gfgPolicy);
+        }
+
+
         MyHTTPRequest req = new MyHTTPRequest();
 
         searchButton.setOnClickListener(click -> {
@@ -90,7 +98,7 @@ public class Pexels extends AppCompatActivity implements NavigationView.OnNaviga
             myEdit.apply();
 
             try {
-                Thread.sleep(5000);
+                Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -112,7 +120,7 @@ public class Pexels extends AppCompatActivity implements NavigationView.OnNaviga
 
                 //open the connection
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestProperty("Authorization", "563492ad6f91700001000001b62248826ada45acb5a07b9db365ec19");
+                urlConnection.setRequestProperty("Authorization", "563492ad6f91700001000001e02a0abf4b14465abc178c6a7821b6b1");
                 //wait for data:
                 InputStream response = urlConnection.getInputStream();
 
