@@ -4,9 +4,14 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/layout/activity_display_data.xml" value="0.2109375" />
+        <entry key="app/src/main/res/layout/activity_empty.xml" value="0.21822916666666667" />
+        <entry key="app/src/main/res/layout/activity_favorite_photos.xml" value="0.16979166666666667" />
         <entry key="app/src/main/res/layout/activity_food_nutri_database.xml" value="0.21822916666666667" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.21822916666666667" />
         <entry key="app/src/main/res/layout/activity_pexels.xml" value="0.21822916666666667" />
+        <entry key="app/src/main/res/layout/favorite_image.xml" value="0.17447916666666666" />
+        <entry key="app/src/main/res/layout/fragment_details_photo.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/image_list_view.xml" value="0.17708333333333334" />
         <entry key="app/src/main/res/layout/items_list.xml" value="0.40260416666666665" />
         <entry key="app/src/main/res/layout/list_item.xml" value="0.21822916666666667" />
         <entry key="app/src/main/res/layout/list_items.xml" value="0.2171875" />

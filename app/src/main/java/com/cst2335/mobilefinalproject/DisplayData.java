@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
@@ -51,8 +53,9 @@ public class DisplayData extends AppCompatActivity {
                 objFromArray = data.getJSONObject(i);
                 photoInfo.setWidth(objFromArray.getInt("width"));
                 photoInfo.setHeight(objFromArray.getInt("height"));
-                photoInfo.setUrl(objFromArray.getJSONObject("src").getString("original"));
+                photoInfo.setImageUrl(objFromArray.getJSONObject("src").getString("original"));
                 photoInfo.setPhotographerName(objFromArray.getString("photographer"));
+                photoInfo.setUrl(objFromArray.getString("url"));
                 photoInfoList.add(photoInfo);
 
             } catch (JSONException  e) {
@@ -62,16 +65,11 @@ public class DisplayData extends AppCompatActivity {
         Log.i("obj", String.valueOf(photoInfoList.size()));
 
 
-//        SharedPreferences sh = getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
-//        String[] data = sh.getString("data",  "").split(",");
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-//        recyclerAdapter = new RecyclerAdapter(authorNames);
         recyclerAdapter = new RecyclerAdapter(getApplicationContext(), photoInfoList);
         recyclerView.setAdapter(recyclerAdapter);
-
-
     }
 
     public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
@@ -79,6 +77,10 @@ public class DisplayData extends AppCompatActivity {
         // private Bitmap[] localDataSet;
         private List<PhotoInfo> dataSet;
         private Context mContext;
+        public String imageF;
+        public int heightF;
+        public int widthF;
+        public String urlF;
 
         public RecyclerAdapter(List<PhotoInfo> photoInfoList) {
         }
@@ -119,9 +121,9 @@ public class DisplayData extends AppCompatActivity {
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
             // Create a new view, which defines the UI of the list item
+
             View view = LayoutInflater.from(viewGroup.getContext())
                     .inflate(R.layout.list_items, viewGroup, false);
-
             return new ViewHolder(view);
         }
 
@@ -134,15 +136,32 @@ public class DisplayData extends AppCompatActivity {
 
             viewHolder.getTextView().setText(dataSet.get(position).getPhotographerName());
             Picasso.get()
-                    .load(dataSet.get(position).getUrl())
+                    .load(dataSet.get(position).getImageUrl())
                     .resize(50, 50)
                     .centerCrop()
                     .into(viewHolder.imageView);
 
-            Log.i("test", String.valueOf(R.id.photo));
+            viewHolder.itemView.setOnClickListener((input) -> {
 
+                Context context = getApplicationContext();
+                CharSequence text = "Show details";
+                int duration = Toast.LENGTH_SHORT;
 
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
 
+                Bundle bundle = new Bundle();
+                bundle.putInt("widthF", dataSet.get(position).getWidth());
+                bundle.putInt("heightF", dataSet.get(position).getHeight());
+                bundle.putString("imageUrlF", dataSet.get(position).getImageUrl());
+                bundle.putString("urlF", dataSet.get(position).getUrl());
+
+                DetailsPhoto dFragment = new DetailsPhoto();
+                dFragment.setArguments(bundle);
+                Intent nextActivity = new Intent(DisplayData.this, EmptyActivity.class);
+                nextActivity.putExtras(bundle);
+                startActivity(nextActivity);
+            });
 
         }
 

@@ -6,19 +6,18 @@ public class PhotoInfo {
 
     private int height;
     private int width;
-
     private String url;
-    private Bitmap image;
     private String photographerName;
+    private String imageUrl;
 
-
-    public Bitmap getImage() {
-        return image;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImage(Bitmap image) {
-        this.image = image;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
+
     public String getPhotographerName() {
         return photographerName;
     }
@@ -27,7 +26,7 @@ public class PhotoInfo {
         this.photographerName=photographerName;
     }
 
-    public double getHeight() {
+    public int getHeight() {
         return height;
     }
 
@@ -35,7 +34,7 @@ public class PhotoInfo {
         this.height = height;
     }
 
-    public double getWidth() {
+    public int getWidth() {
         return width;
     }
 

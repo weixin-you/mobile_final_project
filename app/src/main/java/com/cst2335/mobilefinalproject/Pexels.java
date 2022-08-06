@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -26,9 +28,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,9 +43,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,15 +57,36 @@ public class Pexels extends AppCompatActivity implements NavigationView.OnNaviga
     private EditText searchField;
     private Button searchButton;
     private String inputValue;
-    private String[] photoData2={"one", "two", "three"};
-    private String[] authorNames;
     public static JSONArray retrievedData;
+    ArrayList<Image> imageUrlList = new ArrayList<>();
+
+    SQLiteDatabase db;
+    MyOpenHelper MyOpener;
+    MyListAdapter myListAdapter;
+
+    public static class Image {
+        String imageUrl;
+        long id;
+
+        private Image(String imageUrl, long idIn) {
+            this.imageUrl = imageUrl;
+            this.id=idIn;
+        }
+        public String getImageUrl(){
+            return imageUrl;
+        }
+        public long getId() {
+            return id;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pexels);
+
+        loadDataFromDatabase();
         Toolbar myToolbar = findViewById(R.id.toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,drawer,myToolbar,
@@ -72,6 +99,9 @@ public class Pexels extends AppCompatActivity implements NavigationView.OnNaviga
 
         searchField = findViewById(R.id.search_field);
         searchButton = findViewById(R.id.search_button);
+        ListView listView = findViewById(R.id.listview);
+        listView.setAdapter(myListAdapter = new MyListAdapter());
+
 
 
         if (android.os.Build.VERSION.SDK_INT > 9) {
@@ -82,23 +112,17 @@ public class Pexels extends AppCompatActivity implements NavigationView.OnNaviga
 
 
         MyHTTPRequest req = new MyHTTPRequest();
-
+        searchField.setText(getSharedPreferences("MySharedPref", MODE_PRIVATE).getString("term", ""));
         searchButton.setOnClickListener(click -> {
             inputValue = searchField.getText().toString();
             req.execute("https://api.pexels.com/v1/search?query="+inputValue);
             SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref",MODE_PRIVATE);
             SharedPreferences.Editor myEdit = sharedPreferences.edit();
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < photoData2.length; i++) {
-                sb.append(photoData2[i]).append(",");
-            }
-
-            Log.i("85", "in call back");
-            myEdit.putString("data", sb.toString());
+            myEdit.putString("term", String.valueOf(searchField.getText()));
             myEdit.apply();
 
             try {
-                Thread.sleep(10000);
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -120,7 +144,7 @@ public class Pexels extends AppCompatActivity implements NavigationView.OnNaviga
 
                 //open the connection
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestProperty("Authorization", "563492ad6f91700001000001e02a0abf4b14465abc178c6a7821b6b1");
+                urlConnection.setRequestProperty("Authorization", "563492ad6f91700001000001b62248826ada45acb5a07b9db365ec19");
                 //wait for data:
                 InputStream response = urlConnection.getInputStream();
 
@@ -140,24 +164,11 @@ public class Pexels extends AppCompatActivity implements NavigationView.OnNaviga
                 JSONArray photosArray = jsonResult.getJSONArray("photos");
                 retrievedData = photosArray;
                 Log.i("121", photosArray.toString());
-//                for (int i = 0; i < photosArray.length(); i++) {
-//                    Log.i("start", "start");
-//                    JSONObject objFromArray=photosArray.getJSONObject(i);
-//                    String pictureUrl = objFromArray.getString("url");
-//                    String authorName = objFromArray.getString("name");
-//                    retrievedData[i]=authorName;
-//                    int width = objFromArray.getInt("width");
-//                    int height = objFromArray.getInt("height");
-//                }
-                Log.i("end", "end");
-
 
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
 
             }
-
             return "Done";
         }
 
@@ -255,6 +266,57 @@ public class Pexels extends AppCompatActivity implements NavigationView.OnNaviga
         drawerLayout.closeDrawer(GravityCompat.START);
 
         return false;
+    }
+
+    private void loadDataFromDatabase() {
+        //get a database connection:
+        MyOpenHelper dbOpener = new MyOpenHelper(this);
+        db = dbOpener.getWritableDatabase();
+
+        // We want to get all of the columns. Look at MyOpener.java for the definitions:
+        String[] columns = {MyOpener.COL_ID, MyOpener.COL_IMAGE};
+        //query all the results from the database:
+        Cursor results = db.query(false, MyOpener.TABLE_NAME, columns, null, null, null, null, null, null);
+
+        //Now the results object has rows of results that match the query.
+        //find the column indices:
+        int imgUrlColIndex = results.getColumnIndex(MyOpener.COL_IMAGE);
+        int idColIndex = results.getColumnIndex(MyOpener.COL_ID);
+
+        //iterate over the results, return true if there is a next item:
+        while (results.moveToNext()) {
+            String imgUrl = results.getString(imgUrlColIndex);
+            Log.i("image url", imgUrl);
+            long id = results.getLong(idColIndex);
+
+            imageUrlList.add(new Image(imgUrl, id));
+        }
+    }
+
+    public class MyListAdapter extends BaseAdapter {
+
+        public int getCount() { return imageUrlList.size();}
+        public Object getItem(int position) { return imageUrlList.get(position).imageUrl; }
+        public long getItemId(int position) { return (long) position; }
+        public View getView(int position, View old, ViewGroup parent)
+        {
+            LayoutInflater inflater = getLayoutInflater();
+            View view = inflater.inflate(R.layout.favorite_image, parent, false);
+            ImageView imageView = view.findViewById(R.id.imageview);
+            URL imageUrl = null;
+            Bitmap bitmap = null;
+            try {
+                imageUrl = new URL(imageUrlList.get(position).getImageUrl());
+                bitmap = BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream());
+                imageView.setImageBitmap(bitmap);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return view;
+
+        }
     }
 
 
