@@ -58,6 +58,8 @@ public class Pexels extends AppCompatActivity implements NavigationView.OnNaviga
     private Button searchButton;
     private String inputValue;
     public static JSONArray retrievedData;
+    private TextView deleteBtn;
+    ListView listView;
     ArrayList<Image> imageUrlList = new ArrayList<>();
 
     SQLiteDatabase db;
@@ -99,8 +101,31 @@ public class Pexels extends AppCompatActivity implements NavigationView.OnNaviga
 
         searchField = findViewById(R.id.search_field);
         searchButton = findViewById(R.id.search_button);
-        ListView listView = findViewById(R.id.listview);
+        deleteBtn = findViewById(R.id.delete_button);
+        listView = findViewById(R.id.listview);
         listView.setAdapter(myListAdapter = new MyListAdapter());
+
+        listView.setOnItemClickListener( (p, b, pos, id) -> {
+            Log.i("delete", "delete data");
+            Image whatWasClicked = imageUrlList.get(pos);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle("Do you want to delete this?")
+
+                    //What is the message:
+                    .setMessage("The selected row is:"+ pos+"\n"+"The database id is:"+id)
+                    //what the Yes button does:
+                    .setPositiveButton("Yes", (click, arg) -> {
+                        imageUrlList.remove(pos);
+                        myListAdapter.notifyDataSetChanged();
+                        db.delete(MyOpenHelper.TABLE_NAME,MyOpenHelper.COL_ID+"=?",new String[]{Long.toString(whatWasClicked.getId())});
+                    })
+                    //What the No button does:
+                    .setNegativeButton("No", (click, arg) -> { })
+                    .create().show();
+        });
+//        listView.setOnItemClickListener((p, b, pos, id) -> {
+//            Log.i("delete", "delete data");
+//        });
 
 
 
