@@ -92,10 +92,9 @@ public class DetailsPhoto extends Fragment {
             String url_image=dataFromActivity.getString("imageUrlF");
             ContentValues newRow = new ContentValues();
             newRow.put( MyOpenHelper.COL_IMAGE , url_image);
+            Pexels.myListAdapter.notifyDataSetChanged();
             long id =sqLiteDatabase.insert( MyOpenHelper.TABLE_NAME, null, newRow );
-            Log.i("clicked", "fav clicked");
             Log.i("insert to db", "Add a photoUrl to database");
-
         });
         return result;
     }

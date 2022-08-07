@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -33,6 +34,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,10 +63,11 @@ public class Pexels extends AppCompatActivity implements NavigationView.OnNaviga
     private TextView deleteBtn;
     ListView listView;
     ArrayList<Image> imageUrlList = new ArrayList<>();
+    ProgressBar progressBar;
 
     SQLiteDatabase db;
     MyOpenHelper MyOpener;
-    MyListAdapter myListAdapter;
+    static MyListAdapter myListAdapter;
 
     public static class Image {
         String imageUrl;
@@ -104,6 +107,8 @@ public class Pexels extends AppCompatActivity implements NavigationView.OnNaviga
         deleteBtn = findViewById(R.id.delete_button);
         listView = findViewById(R.id.listview);
         listView.setAdapter(myListAdapter = new MyListAdapter());
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.VISIBLE);
 
         listView.setOnItemClickListener( (p, b, pos, id) -> {
             Log.i("delete", "delete data");
@@ -123,9 +128,6 @@ public class Pexels extends AppCompatActivity implements NavigationView.OnNaviga
                     .setNegativeButton("No", (click, arg) -> { })
                     .create().show();
         });
-//        listView.setOnItemClickListener((p, b, pos, id) -> {
-//            Log.i("delete", "delete data");
-//        });
 
 
 
@@ -141,26 +143,13 @@ public class Pexels extends AppCompatActivity implements NavigationView.OnNaviga
         searchButton.setOnClickListener(click -> {
             inputValue = searchField.getText().toString();
             req.execute("https://api.pexels.com/v1/search?query="+inputValue);
-            SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref",MODE_PRIVATE);
-            SharedPreferences.Editor myEdit = sharedPreferences.edit();
-            myEdit.putString("term", String.valueOf(searchField.getText()));
-            myEdit.apply();
-
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            Intent goToDisplayData = new Intent(Pexels.this, DisplayData.class);
-            startActivity(goToDisplayData);
         });
-
-
     }
 
     private class MyHTTPRequest extends AsyncTask< String, Integer, String> {
         private Bitmap image;
         private String authorName;
+        @SuppressLint("WrongThread")
         public String doInBackground(String ... args)
         {
             try {
@@ -172,11 +161,10 @@ public class Pexels extends AppCompatActivity implements NavigationView.OnNaviga
                 urlConnection.setRequestProperty("Authorization", "563492ad6f91700001000001b62248826ada45acb5a07b9db365ec19");
                 //wait for data:
                 InputStream response = urlConnection.getInputStream();
-
+                onProgressUpdate(100);
                 //Build the entire string response
                 BufferedReader reader = new BufferedReader(new InputStreamReader(response, "UTF-8"));
                 StringBuilder sb = new StringBuilder();
-
                 String line = null;
                 while((line = reader.readLine()) != null){
                     sb.append(line + "\n");
@@ -189,23 +177,28 @@ public class Pexels extends AppCompatActivity implements NavigationView.OnNaviga
                 JSONArray photosArray = jsonResult.getJSONArray("photos");
                 retrievedData = photosArray;
                 Log.i("121", photosArray.toString());
-
             }
             catch (Exception e) {
-
             }
             return "Done";
         }
 
-        public void onProgressUpdate(Integer ... args)
-        {
-
+        public void onProgressUpdate(Integer ... args) {
+            Log.i("Activity", "Update: " + args[0]);
+            progressBar.setVisibility(View.VISIBLE);
+            progressBar.setProgress(args[0]);
         }
         //Type3
         public void onPostExecute(String fromDoInBackground)
         {
             Log.i("HTTP", fromDoInBackground);
-
+            progressBar.setVisibility(View.INVISIBLE);
+            SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref",MODE_PRIVATE);
+            SharedPreferences.Editor myEdit = sharedPreferences.edit();
+            myEdit.putString("term", String.valueOf(searchField.getText()));
+            myEdit.apply();
+            Intent goToDisplayData = new Intent(Pexels.this, DisplayData.class);
+            startActivity(goToDisplayData);
         }
     }
     @Override
@@ -340,10 +333,7 @@ public class Pexels extends AppCompatActivity implements NavigationView.OnNaviga
                 e.printStackTrace();
             }
             return view;
-
         }
     }
-
-
 }
 

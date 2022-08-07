@@ -19,9 +19,11 @@
     <string name="pexelsInstructions4">* Do something</string>
     <string name="pexelsInstructions5">* Do something</string>
     <string name="closeHelpDialog">关闭</string>
-
     <string name="acivity_info">Activity 信息</string>
     <string name="activity_pexels_name">标题: Pexels</string>
     <string name="activity_pexels_author">作者: Weixin You</string>
     <string name="activity_pexels_version">版本号: 1.0</string>
+    <string name="displaydata">Pexels 数据显示</string>
+    <string name="hello_blank_fragment">空白片段</string>
+    <string name="photo_details">图片详情</string>
 </resources>

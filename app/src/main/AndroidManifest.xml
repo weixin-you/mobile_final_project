@@ -41,7 +41,8 @@
         <activity
             android:name=".Pexels"
             android:exported="true"
-            android:label="@string/Pexels" />
+            android:windowSoftInputMode="adjustPan"
+        android:label="@string/Pexels" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
